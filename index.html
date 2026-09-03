@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#a83b31">
+  <title>拜拜日曆</title>
+  <style>
+    :root{--red:#a83b31;--dark:#66251f;--gold:#d59b42;--cream:#fffaf0;--paper:#fff;--ink:#352b28;--muted:#7d706b;--line:#eadfce;--shadow:0 8px 24px rgba(74,42,25,.09)}
+    *{box-sizing:border-box}html{background:#efe9dd}body{margin:0;color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","PingFang TC",sans-serif;background:linear-gradient(180deg,#b4463c 0 190px,#f6efe3 190px);min-height:100vh}
+    button{font:inherit}.app{width:min(100%,560px);margin:auto;min-height:100vh;padding-bottom:92px}.top{padding:calc(18px + env(safe-area-inset-top)) 20px 24px;color:white}.brand{display:flex;align-items:center;justify-content:space-between}.brand h1{font-size:23px;margin:0;letter-spacing:2px}.seal{border:1px solid #f1c989;border-radius:999px;padding:6px 11px;font-size:12px;color:#ffe9bd}.today{margin-top:20px}.today .solar{font-size:14px;opacity:.86}.today .lunar{font-size:27px;font-weight:750;margin-top:4px}.today .wish{font-size:13px;margin-top:6px;color:#ffe4ba}
+    main{padding:0 14px}.card{background:var(--paper);border:1px solid rgba(214,194,163,.55);border-radius:20px;padding:17px;margin-bottom:13px;box-shadow:var(--shadow)}.hero{margin-top:-4px;background:linear-gradient(135deg,#fffdf8,#fff5e3)}.eyebrow{font-size:12px;color:var(--red);font-weight:700;letter-spacing:1px}.hero h2{font-size:22px;margin:7px 0}.hero p{font-size:14px;line-height:1.65;color:var(--muted);margin:5px 0}.chips{display:flex;gap:8px;overflow:auto;padding:3px 0 2px;scrollbar-width:none}.chip{white-space:nowrap;border:1px solid #e6d5bd;background:#fffaf2;color:#6b4a37;border-radius:999px;padding:8px 12px;font-size:13px}.section-title{display:flex;justify-content:space-between;align-items:center;margin:2px 2px 10px}.section-title h3{font-size:17px;margin:0}.section-title small{color:var(--muted)}
+    .event{display:grid;grid-template-columns:52px 1fr auto;gap:11px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}.event:first-of-type{border-top:0}.datebox{background:#f9eee0;border-radius:13px;text-align:center;padding:7px 2px;color:var(--dark)}.datebox b{display:block;font-size:16px}.datebox span{font-size:10px}.event h4{margin:0 0 3px;font-size:15px}.event p{margin:0;color:var(--muted);font-size:12px}.fav{border:0;background:transparent;font-size:23px;color:#c9b9a5;padding:8px}.fav.on{color:#d69a2e}.empty{padding:16px 5px;color:var(--muted);font-size:14px;text-align:center}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.tool{border:1px solid var(--line);border-radius:15px;background:#fffaf3;padding:14px;text-align:left;color:var(--ink)}.tool b{display:block;margin-bottom:5px}.tool span{font-size:12px;color:var(--muted);line-height:1.45}.notice{font-size:12px;line-height:1.6;color:var(--muted);background:#f7f2e9;border-radius:12px;padding:11px;margin-top:12px}
+    nav{position:fixed;z-index:5;bottom:0;left:50%;transform:translateX(-50%);width:min(100%,560px);height:calc(69px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);display:grid;grid-template-columns:repeat(4,1fr);background:rgba(255,255,255,.96);border-top:1px solid #e4d8c7;backdrop-filter:blur(12px)}nav button{border:0;background:transparent;color:#8b7d74;font-size:11px}nav button b{font-size:20px;display:block;margin-bottom:2px}nav button.active{color:var(--red)}
+    .page{display:none}.page.active{display:block}.search{width:100%;border:1px solid var(--line);border-radius:13px;padding:12px 14px;font-size:16px;outline:none;background:#fff}.deity{border-top:1px solid var(--line);padding:14px 0}.deity h4{margin:0 0 6px}.deity p{font-size:13px;color:var(--muted);margin:4px 0;line-height:1.5}.badge{display:inline-block;background:#f6e9d5;color:#864535;font-size:11px;padding:4px 8px;border-radius:999px;margin-right:5px}.month-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.month-head button{border:1px solid var(--line);background:white;border-radius:10px;padding:7px 11px}.month-head h3{margin:0;font-size:17px}.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}.cal div{min-height:43px;padding:5px 1px;border-radius:9px;font-size:12px}.cal .dow{min-height:auto;color:var(--muted);font-size:11px}.cal .has{background:#fff0d9;color:var(--red);font-weight:700}.cal .now{outline:2px solid var(--red)}.cal small{display:block;font-size:8px;overflow:hidden;white-space:nowrap;margin-top:2px}.modal{position:fixed;inset:0;z-index:20;background:rgba(38,23,18,.45);display:none;align-items:flex-end;justify-content:center}.modal.show{display:flex}.sheet{width:min(100%,560px);max-height:82vh;overflow:auto;background:white;border-radius:24px 24px 0 0;padding:22px 19px calc(24px + env(safe-area-inset-bottom))}.sheet h3{margin:0 0 12px}.sheet h4{margin:18px 0 7px;color:var(--red)}.sheet p,.sheet li{font-size:14px;line-height:1.7;color:#655853}.close{float:right;border:0;background:#f3ede4;border-radius:50%;width:32px;height:32px}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="top"><div class="brand"><h1>拜拜日曆</h1><span class="seal">心誠則靈</span></div><div class="today"><div class="solar" id="solar"></div><div class="lunar" id="lunar"></div><div class="wish">把重要的日子，好好記在心上</div></div></header>
+  <main>
+    <section id="home" class="page active">
+      <div class="card hero"><div class="eyebrow">今日提醒</div><h2 id="todayTitle">今日平安順心</h2><p id="todayText">今天沒有收錄的神明聖誕，仍可依平日習慣參拜祈福。</p><div class="chips" id="todayChips"></div></div>
+      <div class="card"><div class="section-title"><h3>近期神明聖誕</h3><small>未來 60 天</small></div><div id="upcoming"></div></div>
+      <div class="card"><div class="section-title"><h3>拜拜工具箱</h3></div><div class="grid"><button class="tool" data-info="offer"><b>🍎 供品小抄</b><span>水果、糕餅與茶水怎麼準備</span></button><button class="tool" data-info="steps"><b>🙏 簡易流程</b><span>參拜順序與稟告方式</span></button><button class="tool" data-info="wish"><b>🧧 求什麼拜誰</b><span>求財、考試、姻緣與平安</span></button><button class="tool" data-tab="favorites"><b>⭐ 我的收藏</b><span>快速查看常拜神明</span></button></div><div class="notice">日期與祭拜方式可能因廟宇、派別及地方習俗不同，前往特定廟宇前請以該廟公告為準。</div></div>
+    </section>
+    <section id="calendar" class="page"><div class="card"><div class="month-head"><button id="prev">‹</button><h3 id="monthLabel"></h3><button id="next">›</button></div><div class="cal" id="cal"></div></div><div class="card"><div class="section-title"><h3>本月聖誕</h3></div><div id="monthEvents"></div></div></section>
+    <section id="deities" class="page"><div class="card"><input class="search" id="search" placeholder="搜尋神明、祈求方向…"><div id="deityList"></div></div></section>
+    <section id="favorites" class="page"><div class="card"><div class="section-title"><h3>我的收藏</h3></div><div id="favoriteList"></div></div></section>
+  </main>
+  <nav><button class="active" data-tab="home"><b>🏠</b>今日</button><button data-tab="calendar"><b>🗓️</b>月曆</button><button data-tab="deities"><b>🏮</b>神明</button><button data-tab="favorites"><b>⭐</b>收藏</button></nav>
+</div>
+<div class="modal" id="modal"><div class="sheet"><button class="close" id="close">×</button><div id="modalBody"></div></div></div>
+<script>
+const gods=[
+ {n:'天公（玉皇上帝）',m:1,d:9,w:'祈福、消災、闔家平安',o:'鮮花、素果、糕餅、清茶'},
+ {n:'土地公',m:2,d:2,w:'求財、生意、地方平安',o:'水果、麻糬、糕餅、茶酒'},
+ {n:'文昌帝君',m:2,d:3,w:'學業、考試、智慧',o:'鮮花、水果、糕餅、清茶'},
+ {n:'觀世音菩薩',m:2,d:19,w:'平安、健康、解厄',o:'鮮花、素果、清茶（以素供為主）'},
+ {n:'玄天上帝',m:3,d:3,w:'消災、健康、事業平安',o:'水果、糕餅、清茶'},
+ {n:'保生大帝',m:3,d:15,w:'健康、醫藥、消災',o:'水果、糕餅、清茶'},
+ {n:'天上聖母（媽祖）',m:3,d:23,w:'出入平安、家庭、事業',o:'鮮花、水果、糕餅、清茶'},
+ {n:'文殊菩薩',m:4,d:4,w:'智慧、學業、考試',o:'鮮花、素果、清茶'},
+ {n:'孚佑帝君（呂洞賓）',m:4,d:14,w:'事業、健康、修持',o:'水果、糕餅、茶'},
+ {n:'神農大帝',m:4,d:26,w:'農業、醫藥、健康',o:'五穀、水果、清茶'},
+ {n:'城隍爺',m:5,d:13,w:'地方平安、是非公道',o:'水果、糕餅、茶酒'},
+ {n:'關聖帝君',m:6,d:24,w:'事業、財運、誠信、考試',o:'鮮花、水果、糕餅、清茶'},
+ {n:'觀世音菩薩成道',m:6,d:19,w:'平安、健康、解厄',o:'鮮花、素果、清茶（以素供為主）'},
+ {n:'七星娘娘',m:7,d:7,w:'孩童平安、姻緣',o:'鮮花、水果、糕餅'},
+ {n:'中元地官大帝',m:7,d:15,w:'赦罪、祈福、普度',o:'依各地普度習俗準備'},
+ {n:'財神爺',m:7,d:22,w:'財運、生意、事業',o:'水果、糕餅、甜食、茶'},
+ {n:'福德正神',m:8,d:15,w:'求財、地方平安',o:'水果、麻糬、糕餅、茶酒'},
+ {n:'月老星君',m:8,d:15,w:'姻緣、感情、人際緣分',o:'鮮花、水果、甜食、清茶'},
+ {n:'孔子',m:8,d:27,w:'學業、考試、智慧',o:'鮮花、水果、糕餅、清茶'},
+ {n:'觀世音菩薩出家',m:9,d:19,w:'平安、健康、解厄',o:'鮮花、素果、清茶（以素供為主）'},
+ {n:'藥師佛',m:9,d:30,w:'健康、消災、延壽',o:'鮮花、素果、清茶'},
+ {n:'水官大帝',m:10,d:15,w:'解厄、消災、祈福',o:'水果、糕餅、清茶'},
+ {n:'阿彌陀佛',m:11,d:17,w:'平安、修持、祈福',o:'鮮花、素果、清茶'},
+ {n:'送神日',m:12,d:24,w:'送神、清屯、除舊布新',o:'甜湯圓、甜食、清茶（依家中習俗）'}
+];
+const fmt=new Intl.DateTimeFormat('zh-TW-u-ca-chinese',{month:'numeric',day:'numeric'});
+function lunarParts(date){const p=fmt.formatToParts(date),get=t=>p.find(x=>x.type===t)?.value||'';return {m:parseInt(get('month')),d:parseInt(get('day')),leap:/閏/.test(fmt.format(date))}}
+const cn=['','初一','初二','初三','初四','初五','初六','初七','初八','初九','初十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十','廿一','廿二','廿三','廿四','廿五','廿六','廿七','廿八','廿九','三十'];
+const mn=['','正月','二月','三月','四月','五月','六月','七月','八月','九月','十月','冬月','臘月'];
+const key=g=>g.m+'-'+g.d;let favs=new Set(JSON.parse(localStorage.getItem('bb-favs')||'[]'));
+function lunarText(date){let l=lunarParts(date);return '農曆'+(l.leap?'閏':'')+mn[l.m]+cn[l.d]}
+function sameDay(a,b){return a.toDateString()===b.toDateString()}
+function scan(days=400){let out=[];const now=new Date();now.setHours(12,0,0,0);for(let i=0;i<=days;i++){let dt=new Date(now);dt.setDate(now.getDate()+i);let l=lunarParts(dt);if(l.leap)continue;gods.filter(g=>g.m===l.m&&g.d===l.d).forEach(g=>out.push({...g,date:dt,away:i}))}return out}
+function eventHTML(e){return `<div class="event"><div class="datebox"><b>${e.date.getMonth()+1}/${e.date.getDate()}</b><span>${e.away===0?'今天':e.away+'天後'}</span></div><div><h4>${e.n}</h4><p>農曆${mn[e.m]}${cn[e.d]} · ${e.w}</p></div><button class="fav ${favs.has(key(e))?'on':''}" data-fav="${key(e)}">★</button></div>`}
+function bindFavs(){document.querySelectorAll('[data-fav]').forEach(b=>b.onclick=()=>{const k=b.dataset.fav;favs.has(k)?favs.delete(k):favs.add(k);localStorage.setItem('bb-favs',JSON.stringify([...favs]));renderAll()})}
+function renderHome(){const now=new Date(),l=lunarParts(now),today=gods.filter(g=>g.m===l.m&&g.d===l.d);solar.textContent=new Intl.DateTimeFormat('zh-TW',{year:'numeric',month:'long',day:'numeric',weekday:'long'}).format(now);lunar.textContent=lunarText(now);todayTitle.textContent=today.length?today.map(x=>x.n).join('、'): '今日平安順心';todayText.textContent=today.length?'今日為收錄的重要日子，可點選神明頁查看常見供品與祈求方向。':'今天沒有收錄的神明聖誕，仍可依平日習慣參拜祈福。';todayChips.innerHTML=today.map(x=>`<span class="chip">🎂 ${x.n}</span>`).join('');upcoming.innerHTML=scan(60).slice(0,8).map(eventHTML).join('')||'<div class="empty">近期沒有收錄的日子</div>'}
+function renderDeities(filter=''){const arr=gods.filter(g=>(g.n+g.w).includes(filter));deityList.innerHTML=arr.map(g=>`<div class="deity"><button class="fav ${favs.has(key(g))?'on':''}" data-fav="${key(g)}" style="float:right">★</button><h4>${g.n}</h4><p><span class="badge">農曆 ${mn[g.m]}${cn[g.d]}</span></p><p><b>常見祈求：</b>${g.w}</p><p><b>常見供品：</b>${g.o}</p></div>`).join('')||'<div class="empty">找不到符合的神明</div>'}
+function renderFavorites(){const ev=scan(400).filter(e=>favs.has(key(e)));favoriteList.innerHTML=ev.map(eventHTML).join('')||'<div class="empty">還沒有收藏。到「神明」頁點星星加入。</div>'}
+let view=new Date();view.setDate(1);
+function renderCalendar(){monthLabel.textContent=`${view.getFullYear()}年${view.getMonth()+1}月`;let first=view.getDay(),last=new Date(view.getFullYear(),view.getMonth()+1,0).getDate(),html=['日','一','二','三','四','五','六'].map(x=>`<div class="dow">${x}</div>`).join('');html+='<div></div>'.repeat(first);let monthE=[];for(let d=1;d<=last;d++){let dt=new Date(view.getFullYear(),view.getMonth(),d,12),l=lunarParts(dt),ev=l.leap?[]:gods.filter(g=>g.m===l.m&&g.d===l.d);ev.forEach(g=>monthE.push({...g,date:dt,away:Math.ceil((dt-new Date().setHours(12,0,0,0))/86400000)}));html+=`<div class="${ev.length?'has ':''}${sameDay(dt,new Date())?'now':''}">${d}<small>${ev[0]?.n||cn[l.d]}</small></div>`}cal.innerHTML=html;monthEvents.innerHTML=monthE.map(eventHTML).join('')||'<div class="empty">本月沒有收錄的神明聖誕</div>'}
+function renderAll(){renderHome();renderDeities(search.value||'');renderFavorites();renderCalendar();bindFavs()}
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{const id=b.dataset.tab;document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('nav button').forEach(n=>n.classList.toggle('active',n.dataset.tab===id));scrollTo(0,0);renderAll()});
+prev.onclick=()=>{view.setMonth(view.getMonth()-1);renderCalendar();bindFavs()};next.onclick=()=>{view.setMonth(view.getMonth()+1);renderCalendar();bindFavs()};search.oninput=e=>{renderDeities(e.target.value.trim());bindFavs()};
+const info={offer:'<h3>🍎 供品小抄</h3><p>一般可準備當季水果、糕餅、鮮花與清茶。數量、葷素、酒品與金紙種類依神明及廟宇規定而異。</p><h4>準備原則</h4><ul><li>供品保持完整、新鮮與整潔。</li><li>佛菩薩通常以素供為宜。</li><li>不確定金紙種類時，可先詢問廟方服務人員。</li></ul>',steps:'<h3>🙏 簡易參拜流程</h3><ol><li>整理衣著與供品，保持敬意。</li><li>依廟方動線，通常先向天公爐，再拜主神與陪祀神明。</li><li>稟告姓名、生日、住址與祈求事項，內容清楚誠懇即可。</li><li>香燒一段時間後再詢問或依廟方方式收供品。</li></ol><p>每間廟宇動線不同，現場指示優先。</p>',wish:'<h3>🧧 求什麼拜誰</h3><p><b>求財／生意：</b>土地公、財神、關聖帝君</p><p><b>考試／學業：</b>文昌帝君、孔子、文殊菩薩</p><p><b>姻緣：</b>月老、七星娘娘</p><p><b>健康：</b>保生大帝、藥師佛、觀世音菩薩</p><p><b>出入平安：</b>媽祖、觀世音菩薩</p><div class="notice">神明信仰與專司說法不盡相同，誠心參拜之外，仍要配合實際行動。</div>'};
+document.querySelectorAll('[data-info]').forEach(b=>b.onclick=()=>{modalBody.innerHTML=info[b.dataset.info];modal.classList.add('show')});document.getElementById('close').onclick=()=>modal.classList.remove('show');modal.onclick=e=>{if(e.target===modal)modal.classList.remove('show')};renderAll();
+</script>
+</body></html>
