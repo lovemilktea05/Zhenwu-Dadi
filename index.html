@@ -32,7 +32,12 @@
 </div>
 <div class="modal" id="modal"><div class="sheet"><button class="close" id="close">×</button><div id="modalBody"></div></div></div>
 <script>
+const solar=document.getElementById('solar'),lunar=document.getElementById('lunar'),todayTitle=document.getElementById('todayTitle'),todayText=document.getElementById('todayText'),todayChips=document.getElementById('todayChips'),upcoming=document.getElementById('upcoming'),monthLabel=document.getElementById('monthLabel'),cal=document.getElementById('cal'),monthEvents=document.getElementById('monthEvents'),deityList=document.getElementById('deityList'),favoriteList=document.getElementById('favoriteList'),searchBox=document.getElementById('search'),modal=document.getElementById('modal'),modalBody=document.getElementById('modalBody');
 const gods=[
+ {n:'無極母娘',m:3,d:15,w:'消災解厄、闔家平安、修持',o:'鮮花、素果、壽桃、壽麵、清茶',note:'另有九月十五、十一月十五等傳承，依所屬宮廟為準'},
+ {n:'九天玄母（九天玄女娘娘）',m:2,d:15,w:'智慧、事業決策、逢凶化吉',o:'鮮花、素果、壽桃、壽麵、清茶',note:'另有八月十八祝壽的傳承，依所屬宮廟為準'},
+ {n:'金龍太子',m:9,d:9,w:'孩童平安、風調雨順、地方平安',o:'鮮花、水果、糕餅、清茶（依廟方規定）',note:'常見記載為九月初九；各地金龍太子身分與傳承不一，仍以所屬宮廟為準'},
+ {n:'黑虎將軍（虎爺）',m:6,d:6,w:'孩童平安、鎮煞、求財',o:'雞蛋、雞蛋糕、清水或米酒（依廟方規定）',note:'常見聖誕為六月初六，各地傳承可能不同'},
  {n:'天公（玉皇上帝）',m:1,d:9,w:'祈福、消災、闔家平安',o:'鮮花、素果、糕餅、清茶'},
  {n:'土地公',m:2,d:2,w:'求財、生意、地方平安',o:'水果、麻糬、糕餅、茶酒'},
  {n:'文昌帝君',m:2,d:3,w:'學業、考試、智慧',o:'鮮花、水果、糕餅、清茶'},
@@ -58,25 +63,26 @@ const gods=[
  {n:'阿彌陀佛',m:11,d:17,w:'平安、修持、祈福',o:'鮮花、素果、清茶'},
  {n:'送神日',m:12,d:24,w:'送神、清屯、除舊布新',o:'甜湯圓、甜食、清茶（依家中習俗）'}
 ];
-const fmt=new Intl.DateTimeFormat('zh-TW-u-ca-chinese',{month:'numeric',day:'numeric'});
-function lunarParts(date){const p=fmt.formatToParts(date),get=t=>p.find(x=>x.type===t)?.value||'';return {m:parseInt(get('month')),d:parseInt(get('day')),leap:/閏/.test(fmt.format(date))}}
+let fmt;try{fmt=new Intl.DateTimeFormat('zh-TW-u-ca-chinese',{month:'numeric',day:'numeric'})}catch(e){fmt=null}
+function lunarParts(date){if(!fmt)return {m:0,d:0,leap:false};const p=fmt.formatToParts(date),get=t=>{const found=p.find(x=>x.type===t);return found?found.value:''};return {m:parseInt(get('month'),10)||0,d:parseInt(get('day'),10)||0,leap:/閏/.test(fmt.format(date))}}
 const cn=['','初一','初二','初三','初四','初五','初六','初七','初八','初九','初十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十','廿一','廿二','廿三','廿四','廿五','廿六','廿七','廿八','廿九','三十'];
 const mn=['','正月','二月','三月','四月','五月','六月','七月','八月','九月','十月','冬月','臘月'];
-const key=g=>g.m+'-'+g.d;let favs=new Set(JSON.parse(localStorage.getItem('bb-favs')||'[]'));
+const key=g=>g.m+'-'+g.d;let saved=[];try{saved=JSON.parse(localStorage.getItem('bb-favs')||'[]')}catch(e){}let favs=new Set(saved);
 function lunarText(date){let l=lunarParts(date);return '農曆'+(l.leap?'閏':'')+mn[l.m]+cn[l.d]}
 function sameDay(a,b){return a.toDateString()===b.toDateString()}
 function scan(days=400){let out=[];const now=new Date();now.setHours(12,0,0,0);for(let i=0;i<=days;i++){let dt=new Date(now);dt.setDate(now.getDate()+i);let l=lunarParts(dt);if(l.leap)continue;gods.filter(g=>g.m===l.m&&g.d===l.d).forEach(g=>out.push({...g,date:dt,away:i}))}return out}
 function eventHTML(e){return `<div class="event"><div class="datebox"><b>${e.date.getMonth()+1}/${e.date.getDate()}</b><span>${e.away===0?'今天':e.away+'天後'}</span></div><div><h4>${e.n}</h4><p>農曆${mn[e.m]}${cn[e.d]} · ${e.w}</p></div><button class="fav ${favs.has(key(e))?'on':''}" data-fav="${key(e)}">★</button></div>`}
-function bindFavs(){document.querySelectorAll('[data-fav]').forEach(b=>b.onclick=()=>{const k=b.dataset.fav;favs.has(k)?favs.delete(k):favs.add(k);localStorage.setItem('bb-favs',JSON.stringify([...favs]));renderAll()})}
+function bindFavs(){document.querySelectorAll('[data-fav]').forEach(b=>b.onclick=()=>{const k=b.dataset.fav;favs.has(k)?favs.delete(k):favs.add(k);try{localStorage.setItem('bb-favs',JSON.stringify([...favs]))}catch(e){}renderAll()})}
 function renderHome(){const now=new Date(),l=lunarParts(now),today=gods.filter(g=>g.m===l.m&&g.d===l.d);solar.textContent=new Intl.DateTimeFormat('zh-TW',{year:'numeric',month:'long',day:'numeric',weekday:'long'}).format(now);lunar.textContent=lunarText(now);todayTitle.textContent=today.length?today.map(x=>x.n).join('、'): '今日平安順心';todayText.textContent=today.length?'今日為收錄的重要日子，可點選神明頁查看常見供品與祈求方向。':'今天沒有收錄的神明聖誕，仍可依平日習慣參拜祈福。';todayChips.innerHTML=today.map(x=>`<span class="chip">🎂 ${x.n}</span>`).join('');upcoming.innerHTML=scan(60).slice(0,8).map(eventHTML).join('')||'<div class="empty">近期沒有收錄的日子</div>'}
-function renderDeities(filter=''){const arr=gods.filter(g=>(g.n+g.w).includes(filter));deityList.innerHTML=arr.map(g=>`<div class="deity"><button class="fav ${favs.has(key(g))?'on':''}" data-fav="${key(g)}" style="float:right">★</button><h4>${g.n}</h4><p><span class="badge">農曆 ${mn[g.m]}${cn[g.d]}</span></p><p><b>常見祈求：</b>${g.w}</p><p><b>常見供品：</b>${g.o}</p></div>`).join('')||'<div class="empty">找不到符合的神明</div>'}
-function renderFavorites(){const ev=scan(400).filter(e=>favs.has(key(e)));favoriteList.innerHTML=ev.map(eventHTML).join('')||'<div class="empty">還沒有收藏。到「神明」頁點星星加入。</div>'}
+function renderDeities(filter=''){const arr=gods.filter(g=>(g.n+g.w).includes(filter));deityList.innerHTML=arr.map(g=>`<div class="deity"><button class="fav ${favs.has(key(g))?'on':''}" data-fav="${key(g)}" style="float:right">★</button><h4>${g.n}</h4><p><span class="badge">${g.m?'農曆 '+mn[g.m]+cn[g.d]:'聖誕待確認'}</span></p><p><b>常見祈求：</b>${g.w}</p><p><b>常見供品：</b>${g.o}</p>${g.note?'<p><b>日期說明：</b>'+g.note+'</p>':''}</div>`).join('')||'<div class="empty">找不到符合的神明</div>'}
+function renderFavorites(){const ev=scan(400).filter(e=>favs.has(key(e))),undated=gods.filter(g=>!g.m&&favs.has(key(g))).map(g=>`<div class="deity"><h4>${g.n}</h4><p><span class="badge">聖誕待確認</span></p><p>${g.note||'日期依所屬宮廟傳承'}</p></div>`).join('');favoriteList.innerHTML=ev.map(eventHTML).join('')+undated;if(!favoriteList.innerHTML)favoriteList.innerHTML='<div class="empty">還沒有收藏。到「神明」頁點星星加入。</div>'}
 let view=new Date();view.setDate(1);
 function renderCalendar(){monthLabel.textContent=`${view.getFullYear()}年${view.getMonth()+1}月`;let first=view.getDay(),last=new Date(view.getFullYear(),view.getMonth()+1,0).getDate(),html=['日','一','二','三','四','五','六'].map(x=>`<div class="dow">${x}</div>`).join('');html+='<div></div>'.repeat(first);let monthE=[];for(let d=1;d<=last;d++){let dt=new Date(view.getFullYear(),view.getMonth(),d,12),l=lunarParts(dt),ev=l.leap?[]:gods.filter(g=>g.m===l.m&&g.d===l.d);ev.forEach(g=>monthE.push({...g,date:dt,away:Math.ceil((dt-new Date().setHours(12,0,0,0))/86400000)}));html+=`<div class="${ev.length?'has ':''}${sameDay(dt,new Date())?'now':''}">${d}<small>${ev[0]?.n||cn[l.d]}</small></div>`}cal.innerHTML=html;monthEvents.innerHTML=monthE.map(eventHTML).join('')||'<div class="empty">本月沒有收錄的神明聖誕</div>'}
-function renderAll(){renderHome();renderDeities(search.value||'');renderFavorites();renderCalendar();bindFavs()}
+function renderAll(){renderHome();renderDeities(searchBox.value||'');renderFavorites();renderCalendar();bindFavs()}
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{const id=b.dataset.tab;document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===id));document.querySelectorAll('nav button').forEach(n=>n.classList.toggle('active',n.dataset.tab===id));scrollTo(0,0);renderAll()});
-prev.onclick=()=>{view.setMonth(view.getMonth()-1);renderCalendar();bindFavs()};next.onclick=()=>{view.setMonth(view.getMonth()+1);renderCalendar();bindFavs()};search.oninput=e=>{renderDeities(e.target.value.trim());bindFavs()};
+document.getElementById('prev').onclick=()=>{view.setMonth(view.getMonth()-1);renderCalendar();bindFavs()};document.getElementById('next').onclick=()=>{view.setMonth(view.getMonth()+1);renderCalendar();bindFavs()};searchBox.oninput=e=>{renderDeities(e.target.value.trim());bindFavs()};
 const info={offer:'<h3>🍎 供品小抄</h3><p>一般可準備當季水果、糕餅、鮮花與清茶。數量、葷素、酒品與金紙種類依神明及廟宇規定而異。</p><h4>準備原則</h4><ul><li>供品保持完整、新鮮與整潔。</li><li>佛菩薩通常以素供為宜。</li><li>不確定金紙種類時，可先詢問廟方服務人員。</li></ul>',steps:'<h3>🙏 簡易參拜流程</h3><ol><li>整理衣著與供品，保持敬意。</li><li>依廟方動線，通常先向天公爐，再拜主神與陪祀神明。</li><li>稟告姓名、生日、住址與祈求事項，內容清楚誠懇即可。</li><li>香燒一段時間後再詢問或依廟方方式收供品。</li></ol><p>每間廟宇動線不同，現場指示優先。</p>',wish:'<h3>🧧 求什麼拜誰</h3><p><b>求財／生意：</b>土地公、財神、關聖帝君</p><p><b>考試／學業：</b>文昌帝君、孔子、文殊菩薩</p><p><b>姻緣：</b>月老、七星娘娘</p><p><b>健康：</b>保生大帝、藥師佛、觀世音菩薩</p><p><b>出入平安：</b>媽祖、觀世音菩薩</p><div class="notice">神明信仰與專司說法不盡相同，誠心參拜之外，仍要配合實際行動。</div>'};
-document.querySelectorAll('[data-info]').forEach(b=>b.onclick=()=>{modalBody.innerHTML=info[b.dataset.info];modal.classList.add('show')});document.getElementById('close').onclick=()=>modal.classList.remove('show');modal.onclick=e=>{if(e.target===modal)modal.classList.remove('show')};renderAll();
+document.querySelectorAll('[data-info]').forEach(b=>b.onclick=()=>{modalBody.innerHTML=info[b.dataset.info];modal.classList.add('show')});document.getElementById('close').onclick=()=>modal.classList.remove('show');modal.onclick=e=>{if(e.target===modal)modal.classList.remove('show')};
+try{renderAll()}catch(err){document.getElementById('todayTitle').textContent='拜拜日曆';document.getElementById('todayText').textContent='資料載入失敗，請重新開啟網頁。';document.getElementById('upcoming').innerHTML='<div class="empty">神明資料暫時無法載入</div>'}
 </script>
 </body></html>
